@@ -1,0 +1,130 @@
+////* Introduction to Data Analysis in Stata *////
+
+
+/*  Getting started with Stata (AUCA course)*/
+
+/*------------------------------------------------
+  by Kamila Kolpashnikova Wed Jan 18 12:10 2017
+  Please report errors to kolpashnikova_k@auca.kg
+  Run with do GettingStarted
+     ________  ___  ___  ________  ________     
+    |\   __  \|\  \|\  \|\   ____\|\   __  \    
+    \ \  \|\  \ \  \\\  \ \  \___|\ \  \|\  \   
+     \ \   __  \ \  \\\  \ \  \    \ \   __  \  
+      \ \  \ \  \ \  \\\  \ \  \____\ \  \ \  \ 
+       \ \__\ \__\ \_______\ \_______\ \__\ \__\
+        \|__|\|__|\|_______|\|_______|\|__|\|__|
+                                            
+----------------------------------------------- */
+
+*let's download a comma-separated file first into the working directory
+
+*First off, we need to set up a working directory for our Stata work.  
+*This is where you will store files for this class
+
+cd  /* examine the current working directory */
+
+cd "C:\Users\Kamila\Documents\2017\statistics course" 
+/*change working directory - insert the path where you keep Stata data */
+/*try not to have spaces in folder names as here,*/
+/*but if you do use quotation marks*/
+
+cd   
+/*examine current working directory again - your data files should show up here*/
+
+insheet using "C:\Users\Kamila\Documents\2017\statistics course\cps16csv.csv", ///
+  comma clear
+
+save "C:\Users\Kamila\Documents\2017\statistics course\cps16csv.dta", replace
+use cps16csv.dta  /* We will use the cps data for this session */
+
+browse /*if you want to see your data */
+
+
+/*  Describing data using some basic commands and descriptive statistics */
+
+describe  /*describe cps data*/
+
+list in 1/5 /*list first 5 observations */
+
+list logwg race educ in 1/5 /*list specific variables for first 5 observations */
+
+summarize educ /*summarize education variable*/
+
+graph twoway (function y=normalden(x,13.21453,2.473397), range(0 30) lw(medthick)) ///
+             (function y=normalden(x,6.22698,.7951486), range(0 30) lw(medthick)), ///
+  title("Normal-Distribution comparison") ///
+  xtitle("Normal", size(medlarge)) ytitle("") ///
+  xlabel(0(2)30) ///
+  xscale(lw(medthick)) yscale(lw(medthick)) ///
+  legend(off) ///
+  graphregion(fcolor(white))
+
+sum educ   /* can abbreviate summarize as sum */ 
+
+sum educ race   /* can summarize multiple variables at once*/
+
+tabulate race /* tabulates the race variable in frequency table */
+
+tabulate educ race /* cross tabulates the race with years of education */
+
+tab educ race, column /* abbreviate as tab and add the column option to show */
+/*percentages in an additional column */
+
+tab educ race, column nofreq /* adding the nofreq option suppresse the frequencies */
+
+histogram educ /* create a histogram of education */
+
+hist educ, title ("Histogram of Education") /* add a title to your plot */
+
+hist educ, percent /* the percent option will give percentages rather than density */
+
+histogram educ, freq normal ///
+         xaxis(1 2) color(green) ///
+         ylabel(0(500)3000, grid) ///
+         xlabel(13.21453 "mean" ///
+               10.741133 "-1 s.d." ///
+              15.687927 "+1 s.d." ///
+               8.267736 "-2 s.d." ///
+              18.161324 "+2 s.d." ///
+    , axis(2) grid gmax) ///
+         xtitle("", axis(2)) ///
+         subtitle("Education") ///
+         note("Source:  CPS")
+
+
+histogram educ, percent ///
+         by(parttime, col(2)) xaxis(1 2) ///
+         ylabel(0(5)50, grid) ///
+     xlabel(0(3)25, grid) ///
+         xlabel(13.21453 "mean" ///
+               10.741133 "-1 s.d." ///
+              15.687927 "+1 s.d." ///
+               8.267736 "-2 s.d." ///
+              18.161324 "+2 s.d." ///
+    , axis(2) grid gmax) ///
+         xtitle("", axis(2)) ///
+         subtitle("Education") ///
+         note("Source:  CPS")
+
+graph box educ  /* produces a box plot */
+
+/* produces a box plot of education by race */
+graph box educ, over(race) ///
+  ytitle("Education") ///
+  title("Education by Race", span) ///
+  subtitle(" ") ///
+  note("Source:  CPS", span)
+  
+graph hbox educ, over(race) ///
+  ytitle("Education") ///
+  title("Education by Race", span) ///
+  subtitle(" ") ///
+  note("Source:  CPS", span)
+
+twoway scatter logwg educ /* scatterplot of logwage and educ - list y first then x */
+
+twoway scatter logwg educ, ///
+  ytitle(Log wage) ///
+  xtitle(Years of schooling) ///
+  title("Log Wages by Years of Schooling") /*adding some titles*/
